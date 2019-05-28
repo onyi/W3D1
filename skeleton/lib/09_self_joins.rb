@@ -203,9 +203,11 @@ def craiglockhart_to_sighthill
   # stop for the transfer, and the bus no. and company for the second bus.
   execute(<<-SQL)
     SELECT
-      stopb.name,
+      a.num,
       a.company,
-      a.num
+      stopc.name,
+      c.num,
+      c.company
     FROM
       routes a
     JOIN
@@ -214,7 +216,21 @@ def craiglockhart_to_sighthill
       stops stopa ON (a.stop_id = stopa.id)
     JOIN
       stops stopb ON (b.stop_id = stopb.id)
-    WHERE
+    JOIN
+      routes c ON (c.stop_id = b.stop_id)
+    JOIN
+      routes d ON (c.company = d.company AND c.num = d.num)
+    JOIN
+      stops stopc ON (c.stop_id = stopc.id)
+    JOIN
+      stops stopd ON (d.stop_id = stopd.id)
+    WHERE 
+      stopb.name = stopc.name
+    AND 
       stopa.name = 'Craiglockhart'
+    AND
+      stopd.name = 'Sighthill'
+    ORDER BY a.num asc, c.num ASC
+
   SQL
 end
