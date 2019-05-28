@@ -17,27 +17,32 @@ require_relative './sqlzoo.rb'
 def num_stops
   # How many stops are in the database?
   execute(<<-SQL)
-  SELECT COUNT(*)
-  FROM stops
+    SELECT COUNT(*)
+    FROM stops
   SQL
 end
 
 def craiglockhart_id
   # Find the id value for the stop 'Craiglockhart'.
   execute(<<-SQL)
-  SELECT id
-  FROM stops
-  WHERE name = 'Craiglockhart'
+    SELECT id
+    FROM stops
+    WHERE 
+      name = 'Craiglockhart'
   SQL
 end
 
 def lrt_stops
   # Give the id and the name for the stops on the '4' 'LRT' service.
   execute(<<-SQL)
-  SELECT stops.id, stops.name
-  FROM stops
-  LEFT JOIN routes ON stops.id = routes.stop_id
-  WHERE routes.company = 'LRT' AND routes.num = '4'
+    SELECT 
+      stops.id, stops.name
+    FROM 
+      stops
+    LEFT JOIN routes 
+      ON stops.id = routes.stop_id
+    WHERE 
+      routes.company = 'LRT' AND routes.num = '4'
   SQL
 end
 
@@ -77,14 +82,14 @@ def cl_to_lr
   # shows the services from Craiglockhart to London Road.
   execute(<<-SQL)
     SELECT
-    a.company,
-    a.num,
-    a.stop_id,
-    b.stop_id
-  FROM
-    routes a
-  JOIN
-    routes b ON (a.company = b.company AND a.num = b.num)
+      a.company,
+      a.num,
+      a.stop_id,
+      b.stop_id
+    FROM
+      routes a
+    JOIN
+      routes b ON (a.company = b.company AND a.num = b.num)
   WHERE
     a.stop_id = 53
   AND
@@ -126,17 +131,18 @@ def haymarket_and_leith
   # Give the company and num of the services that connect stops
   # 115 and 137 ('Haymarket' and 'Leith')
   execute(<<-SQL)
-    SELECT DISTINCT C.company, C.num FROM 
-    (
-      SELECT A.company, A.num, A.stop_id, B.stop_id
-      FROM routes A
-      JOIN routes B
-      ON A.num = B.num AND A.company = B.company
-      WHERE A.stop_id = 115
-      AND B.stop_id = 137
-    ) C
-
-    
+      SELECT DISTINCT
+        A.company, A.num
+      FROM 
+        routes A
+      JOIN 
+        routes B
+      ON 
+        A.num = B.num AND A.company = B.company
+      WHERE 
+        A.stop_id = 115
+      AND 
+        B.stop_id = 137
   SQL
 end
 
@@ -144,7 +150,6 @@ def craiglockhart_and_tollcross
   # Give the company and num of the services that connect stops
   # 'Craiglockhart' and 'Tollcross'
   execute(<<-SQL)
-
     SELECT
       a.company,
       a.num
@@ -160,20 +165,8 @@ def craiglockhart_and_tollcross
       stopa.name = 'Craiglockhart'
     AND
       stopb.name = 'Tollcross'
-
-
   SQL
 end
-
-    # SELECT DISTINCT C.company, C.num FROM 
-    # (
-    #   SELECT A.company, A.num, A.stop_name, B.stop_name
-    #   FROM routes A
-    #   JOIN routes B
-    #   ON A.num = B.num AND A.company = B.company
-    #   WHERE A.stop_name = 'Craiglockhart'
-    #   AND B.stop_name = 'Tollcross'
-    # ) C
 
 def start_at_craiglockhart
   # Give a distinct list of the stops that can be reached from 'Craiglockhart'
@@ -202,7 +195,7 @@ def craiglockhart_to_sighthill
   # Sighthill. Show the bus no. and company for the first bus, the name of the
   # stop for the transfer, and the bus no. and company for the second bus.
   execute(<<-SQL)
-    SELECT
+    SELECT DISTINCT
       a.num,
       a.company,
       stopc.name,
@@ -230,7 +223,6 @@ def craiglockhart_to_sighthill
       stopa.name = 'Craiglockhart'
     AND
       stopd.name = 'Sighthill'
-    ORDER BY a.num asc, c.num ASC
 
   SQL
 end
